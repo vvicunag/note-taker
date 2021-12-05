@@ -30,10 +30,7 @@ app.get('/api/notes', (req, res) => {
   res.status(200).json(notes);
 });
 
-
-
-
-
+// POST request to save a note
 app.post('/api/notes', (req, res) => {
   console.info(`received a ${req.method} request to save a note`);
   const {title, text} = req.body;
@@ -48,16 +45,31 @@ app.post('/api/notes', (req, res) => {
       body: newNote,
     };
     console.log(response);
-    res.status(201).json(response);
+    readAndAppend(newNote, './db/db.json')
+    res.status(201).json(notes);
   } else {
     res.status(500).json('Error in posting note');
   }
 })
 
+// reads the db file
+const readAndAppend = (content, file) => {
+  fs.readFile(file, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+    } else {
+      const parsedData = JSON.parse(data);
+      parsedData.push(content);
+      writeToFile(file, parsedData);
+    }
+  });
+};
 
-
-
-
+// writes new note in db file
+const writeToFile = (destination, content) =>
+  fs.writeFile(destination, JSON.stringify(content, null, 4), (err) =>
+    err ? console.error(err) : console.info(`\nData written to ${destination}`)
+  );
 
 app.listen(PORT, () =>
   console.log(`App listening at http://localhost:${PORT}`)
