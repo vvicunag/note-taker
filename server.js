@@ -4,7 +4,7 @@ const path = require('path');
 const notes = require("./db/db.json");
 const uuid = require('./helpers/uuid'); 
 
-const PORT = 3001; 
+const PORT = process.env.PORT || 3001; 
 
 const app = express(); 
 
@@ -45,6 +45,7 @@ app.post('/api/notes', (req, res) => {
       body: newNote,
     };
     console.log(response);
+    notes.push(newNote);
     readAndAppend(newNote, './db/db.json')
     res.status(201).json(notes);
   } else {
